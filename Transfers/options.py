@@ -1,0 +1,7 @@
+# настройки приложения MinionEditor
+
+OPTIONS_DATABASE_HOST = ''
+OPTIONS_DATABASE_NAME = 'transfersdb'
+OPTIONS_DATABASE_USER = 'transfersuser'
+OPTIONS_DATABASE_PASSWORD = '123456'
+OPTIONS_DATABASE_PORT = '5432'
