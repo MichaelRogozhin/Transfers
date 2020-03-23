@@ -3,47 +3,47 @@ from django.db import models
 # Create your models here.
 
 
-# Клиенты
+# РљР»РёРµРЅС‚С‹
 class Client(models.Model):
     email = models.CharField(primary_key=True, max_length=200)
     password = models.CharField(max_length=100)
-    token = models.CharField(max_length=100) # токен для авторизации при выполнении методов API
+    token = models.CharField(max_length=100) # С‚РѕРєРµРЅ РґР»СЏ Р°РІС‚РѕСЂРёР·Р°С†РёРё РїСЂРё РІС‹РїРѕР»РЅРµРЅРёРё РјРµС‚РѕРґРѕРІ API
 
 
-# Счета клиентов (связь с клиентами 1:М в дальнейшем позволит делать несколько счетов для клиента)
+# РЎС‡РµС‚Р° РєР»РёРµРЅС‚РѕРІ (СЃРІСЏР·СЊ СЃ РєР»РёРµРЅС‚Р°РјРё 1:Рњ РІ РґР°Р»СЊРЅРµР№С€РµРј РїРѕР·РІРѕР»РёС‚ РґРµР»Р°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ СЃС‡РµС‚РѕРІ РґР»СЏ РєР»РёРµРЅС‚Р°)
 class Account(models.Model):
     id = models.AutoField(primary_key=True)
     client = models.ForeignKey(
         Client,
         on_delete=models.DO_NOTHING,
         to_field='email')
-    currency = models.ForeignKey( # валюта счета
+    currency = models.ForeignKey( # РІР°Р»СЋС‚Р° СЃС‡РµС‚Р°
         'Currency',
         on_delete=models.DO_NOTHING,
         to_field='code')
-    amount = models.FloatField() # баланс (остаток) на счете
+    amount = models.FloatField() # Р±Р°Р»Р°РЅСЃ (РѕСЃС‚Р°С‚РѕРє) РЅР° СЃС‡РµС‚Рµ
 
 
-# Операции над счетами
+# РћРїРµСЂР°С†РёРё РЅР°Рґ СЃС‡РµС‚Р°РјРё
 class Operation(models.Model):
     id = models.AutoField(primary_key=True)
-    dt = models.DateTimeField() # дата операции
-    account_source = models.ForeignKey( # счет, с которого был совершен перевод
+    dt = models.DateTimeField() # РґР°С‚Р° РѕРїРµСЂР°С†РёРё
+    account_source = models.ForeignKey( # СЃС‡РµС‚, СЃ РєРѕС‚РѕСЂРѕРіРѕ Р±С‹Р» СЃРѕРІРµСЂС€РµРЅ РїРµСЂРµРІРѕРґ
         Account,
         on_delete=models.DO_NOTHING,
         to_field='id',
         related_name='ops_source')
-    account_dest = models.ForeignKey( # счет, на который был совершен перевод
+    account_dest = models.ForeignKey( # СЃС‡РµС‚, РЅР° РєРѕС‚РѕСЂС‹Р№ Р±С‹Р» СЃРѕРІРµСЂС€РµРЅ РїРµСЂРµРІРѕРґ
         Account,
         on_delete=models.DO_NOTHING,
         to_field='id',
         related_name='ops_dest')
-    amount_source = models.FloatField() # сумма списанная (в валюте счета account_source)
-    amount_dest = models.FloatField() # сумма зачисленная (в валюте счета account_dest)
+    amount_source = models.FloatField() # СЃСѓРјРјР° СЃРїРёСЃР°РЅРЅР°СЏ (РІ РІР°Р»СЋС‚Рµ СЃС‡РµС‚Р° account_source)
+    amount_dest = models.FloatField() # СЃСѓРјРјР° Р·Р°С‡РёСЃР»РµРЅРЅР°СЏ (РІ РІР°Р»СЋС‚Рµ СЃС‡РµС‚Р° account_dest)
 
 
-# Валюты
+# Р’Р°Р»СЋС‚С‹
 # EUR, USD, GPB, RUB, BTC
 class Currency(models.Model):
-    code = models.CharField(primary_key=True, max_length=10) # код валюты (EUR, USD и т.д)
-    rate = models.FloatField() # курс валюты по отношению к EUR (EUR принята как базовая)
+    code = models.CharField(primary_key=True, max_length=10) # РєРѕРґ РІР°Р»СЋС‚С‹ (EUR, USD Рё С‚.Рґ)
+    rate = models.FloatField() # РєСѓСЂСЃ РІР°Р»СЋС‚С‹ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє EUR (EUR РїСЂРёРЅСЏС‚Р° РєР°Рє Р±Р°Р·РѕРІР°СЏ)
