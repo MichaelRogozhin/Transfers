@@ -15,3 +15,9 @@ env\scripts\activate.bat
 
 Установка пакетов
 pip install -r requirements.txt
+
+
+В Postgres необходимо создать пользователя transfersuser с паролем 123456, и базу данных transfersdb с владельцем transfersuser.
+Данные для подключения к БД в прокте находятся в файле Transfers/options.py
+
+Затем провести миграции или восстановить бекап базы данных из файла _db/transfersdb.backup или _db/transfersdb.sql
