@@ -16,7 +16,8 @@ class Account(models.Model):
     client = models.ForeignKey(
         Client,
         on_delete=models.DO_NOTHING,
-        to_field='email')
+        to_field='email',
+        related_name='acnt')
     currency = models.ForeignKey( # валюта счета
         'Currency',
         on_delete=models.DO_NOTHING,

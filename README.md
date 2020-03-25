@@ -21,3 +21,22 @@ pip install -r requirements.txt
 Данные для подключения к БД в прокте находятся в файле Transfers/options.py
 
 Затем провести миграции или восстановить бекап базы данных из файла _db/transfersdb.backup или _db/transfersdb.sql
+
+В соответствии с заданием созданы следующие API-методы (POST-запросы):
+
+Register
+входные парамтеры: balance, currency, email, password
+возвращает:
+
+Authenticate
+входные парамтеры: email, password
+возвращает:
+
+Transfer
+входные парамтеры: email, token, amount
+возвращает:
+
+GetOperations
+входные парамтеры: email, token
+возвращает:
+
