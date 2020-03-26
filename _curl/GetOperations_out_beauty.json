@@ -1,0 +1,19 @@
+{"result": "ok", "operations":
+  [
+    {
+      "account_source": "ivanov@mail.ru",
+      "currency_source": "USD",
+      "amount_source": 400.0,
+      "account_dest": "smirnov@mail.ru",
+      "currency_dest": "RUB",
+      "amount_dest": 30909.09
+    },
+    {
+      "account_source": "ivanov@mail.ru",
+      "currency_source": "USD",
+      "amount_source": 300.0,
+      "account_dest": "petrov@mail.ru",
+      "currency_dest": "EUR",
+      "amount_dest": 272.73}
+  ]
+}

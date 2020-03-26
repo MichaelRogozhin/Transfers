@@ -1,6 +1,8 @@
 import json
 import uuid
 import requests
+import threading
+from time import sleep
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils import timezone
@@ -12,20 +14,6 @@ from main.models import Operation
 from main.models import Currency
 
 # Create your views here.
-
-#Проект представляет из себя REST API, которое позволяет  выполнять следующие действия:
-#●	зарегистрировать пользователя с указанием Register
-#○	начальный баланс
-#○	валюта счета
-#○	email (уникальный; используется для входа)
-#○	пароль
-#●	аутентифицировать пользователя по почте и паролю Authenticate
-#●	перевести средства со своего счета на счет другого пользователя (используйте формулу конвертации, если валюты счетов отличаются) Transfer
-#●	просмотреть список всех операций по своему счету GetOperations
-#●	обновлять курсы валют со стороннего ресурса (например, exchangeratesapi.io) раз в N времени (например, раз в 3 минуты)
-
-#Система должна поддерживать следующие валюты: EUR, USD, GPB, RUB, BTC
-
 
 # зарегистрировать пользователя
 class Register(APIView):
@@ -141,6 +129,7 @@ class Transfer(APIView):
         if client.token != token:
             error = 'Ошибка авторизации - неверный токен'
             res_json = json.dumps({'result': 'error', 'error_text': error}, ensure_ascii=False)
+            return HttpResponse(res_json, content_type="application/json")
 
         # ПЕРЕВОД
         client_dest = params['client_dest']
@@ -201,9 +190,12 @@ class GetOperations(APIView):
             return HttpResponse(res_json, content_type="application/json")
         # проверка токена
         client = Client.objects.get(email=email)
+        print('client.token', client.token, type(client.token))
+        print('token', token, type(token))
         if client.token != token:
             error = 'Ошибка авторизации - неверный токен'
             res_json = json.dumps({'result': 'error', 'error_text': error}, ensure_ascii=False)
+            return HttpResponse(res_json, content_type="application/json")
 
 
 
@@ -230,13 +222,31 @@ class GetOperations(APIView):
 
 
 def getCurrencyRates():
-    data = requests.get('https://api.exchangeratesapi.io/latest')
+    while True:
+        data = requests.get('https://api.exchangeratesapi.io/latest')
+        js = data.json()
+        #print('js', js, type(js))
 
-    js = data.json()
-    #res = res.encode('utf-8').decode('cp1251')
-    print('js', js, type(js))
+        # проверка базовой валюты
+        base =  js['base']
+        if base != 'EUR':
+            print('Данные по курсам получены не для базовой валюты EUR. Их использование не возможно.')
+            break
 
+        rates = js['rates']
+        #print('rates', rates, type(rates))
+
+        updated_curs = ''
+        currencies = Currency.objects.all()
+        for currency in currencies:
+            if currency.code in rates:
+                currency.rate = rates[currency.code]
+                currency.save()
+                updated_curs = updated_curs + currency.code + ' '
+        print('Обновлены курсы валют: %s' % updated_curs)
+        sleep(3*60)
     return
 
 
-getCurrencyRates()
+gcur_th = threading.Thread(target=getCurrencyRates, name="gcur_th", args=(), daemon=True) # args=(,)
+gcur_th.start()
