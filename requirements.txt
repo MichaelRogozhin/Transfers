@@ -1,4 +1,4 @@
-﻿django==2.2.11
+﻿django==2.2.13
 djangorestframework
 psycopg2
 requests
